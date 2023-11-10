@@ -14,13 +14,13 @@ import streamlit
 import streamlit.components.v1 as components
 
 
-def plot_chart(plot: Plot) -> None:
+def plot_chart(plot: Plot, use_container_width: bool = True) -> None:
     """Plot Bokeh chart with Streamlit.
 
     Separated into a function to support Bokeh versions 2 and 3.
     """
     if bokeh.__version__ < "3":
-        streamlit.bokeh_chart(plot, use_container_width=True)
+        streamlit.bokeh_chart(plot, use_container_width=use_container_width)
     else:
         components.html(
             bokeh.embed.file_html(plot, "cdn"),

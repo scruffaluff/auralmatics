@@ -17,9 +17,9 @@ magicEnabled = false
 
 [server]
 address = "0.0.0.0"
-fileWatcherType = "none"
+fileWatcherType = "watchdog"
 headless = true
-runOnSave = false
+runOnSave = true
 
 [theme]
 base = "light"

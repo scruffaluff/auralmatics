@@ -32,7 +32,6 @@ jobs:
       ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'container'
       }}
     name: Build and push Docker image
-    needs: release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code repository
@@ -64,7 +63,7 @@ jobs:
     if: >-
       ${{ github.event_name != 'workflow_dispatch' || inputs.job == 'deploy' }}
     name: Deploy application to FlyIO
-    needs: release
+    needs: container
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code repository
