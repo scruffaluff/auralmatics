@@ -1,0 +1,102 @@
+# Python configuration file for building, dependencies, and tooling.
+#
+# For more information, visit
+# https://snarky.ca/what-the-heck-is-pyproject-toml/.
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.black]
+line-length = 80
+
+[tool.coverage.report]
+exclude_lines = [
+    "if sys.version_info.*",
+    "pragma: no cover",
+    "raise NotImplementedError",
+]
+fail_under = 0
+omit = [
+    "src/auralmatics/app.py",
+    "src/auralmatics/__main__.py",
+    "src/auralmatics/components",
+]
+show_missing = true
+
+[tool.coverage.run]
+branch = true
+command_line = "-m pytest"
+omit = []
+source = ["auralmatics"]
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+exclude = [
+    '\.benchmarks/',
+    '\.hypothesis/',
+    '\.pytest_cache/',
+    '\.venv/',
+    'data/',
+    'tmp/',
+]
+ignore_missing_imports = true
+no_implicit_optional = true
+strict_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.poetry]
+authors = ["Macklan Weinstein <macklan.weinstein@gmail.com>"]
+description = "Workspace for exploring audio processing mathematics."
+homepage = "https://github.com/scruffaluff/auralmatics"
+keywords = []
+license = "MIT"
+name = "auralmatics"
+readme = "README.md"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+# Streamlit does not yet support Bokeh 3.0.0.
+bokeh = "^2.4.0"
+numpy = "^1.25.0"
+python = "^3.10.0"
+scipy = "^1.9.0"
+streamlit = "^1.28.0"
+webcolors = "^1.13.0"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.7.0"
+black = "^23.11.0"
+coverage = { extras = ["toml"], version = "^7.3.0" }
+flake8 = "^6.1.0"
+flake8-bugbear = "^23.9.0"
+flake8-docstrings = "^1.7.0"
+flake8-import-order = "^0.18.0"
+mccabe = "^0.7.0"
+mypy = "^1.7.0"
+py-spy = "^0.3.14"
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.12.0"
+pytest-playwright = "^0.4.0"
+requests = "^2.31.0"
+toml = "^0.10.2"
+tox = "^4.11.3"
+types-requests = "^2.31.0"
+types-toml = "^0.10.8"
+
+[tool.poetry.scripts]
+auralmatics = "auralmatics.__main__:main"
+
+[tool.pytest.ini_options]
+addopts = "--verbose --browser chromium --capture no --output tests/results --screenshot only-on-failure --video retain-on-failure"
+filterwarnings = ["ignore::DeprecationWarning"]
+markers = ["e2e: End to end tests", "unit: mark as unit test."]
+python_classes = "Test*"
+python_files = ["__init__.py", "test_*.py"]
+python_functions = ["test_*"]
+testpaths = ["tests"]
