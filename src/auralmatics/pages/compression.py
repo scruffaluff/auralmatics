@@ -15,33 +15,37 @@ from auralmatics import util
 
 def compress(
     signal: NDArray,
-    knee_width: float = 0.1,
+    knee_width: float = 0.0,
     make_gain: float = 0.2,
     ratio: float = 4.0,
     threshold: float = 0.8,
 ) -> NDArray:
-    """Apply compression to signal."""
     sign = numpy.sign(signal)
-    value = numpy.abs(signal)
+    amplitude = numpy.abs(signal)
 
     for index in range(len(signal)):
-        if value[index] > threshold:
-            value[index] = (value[index] - threshold) / ratio + threshold
-    return cast(NDArray, sign * (value + make_gain))
+        value = amplitude[index] - threshold
+        if value > knee_width / 2:
+            amplitude[index] = value / ratio + threshold
+        elif value > -knee_width / 2:
+            smoothing = (value + knee_width / 2) ** 2 / (2 * knee_width)
+            amplitude[index] += (1 / ratio - 1) * smoothing
+
+    return cast(NDArray, sign * (amplitude + make_gain))
 
 
-def example_bell() -> None:
-    """Compression example with a school bell sample input."""
+def example_guitar() -> None:
+    """Compression example with a jazz guitar sample input."""
     streamlit.markdown(
-        """We can take the following sample of a school bell and apply
+        """We can take the following sample of a jazz guitar and apply
         compression."""
     )
 
-    path = Path("data/school_bell.wav")
+    path = Path("data/jazz_guitar.wav")
     rate, samples = util.read_wave(path)
 
     knee_width, make_gain, ratio, threshold = parameters(
-        key_prefix="example_bell"
+        key_prefix="example_guitar"
     )
     processed = compress(
         numpy.copy(samples),
@@ -51,9 +55,9 @@ def example_bell() -> None:
         threshold=threshold,
     )
 
-    times = numpy.arange(len(samples), dtype=numpy.uint64) / len(samples)
+    times = numpy.arange(len(samples), dtype=numpy.uint64) / rate
     plot = plotting.figure(
-        title="School Bell",
+        title="Jazz Guitar",
         x_axis_label="Time (s)",
         x_range=(times[0], times[-1]),
         y_axis_label="Amplitude",
@@ -63,13 +67,21 @@ def example_bell() -> None:
     plot.toolbar.logo = None
     plot.line(
         times,
+        samples,
+        color="#60e1e0",
+        legend_label="original",
+        line_width=2,
+    )
+    plot.line(
+        times,
         processed,
         color="#fdc182",
+        legend_label="compressed",
         line_width=2,
     )
     util.plot_chart(plot)
 
-    streamlit.audio(samples, format="audio/wav", sample_rate=rate)
+    streamlit.audio(processed, format="audio/wav", sample_rate=rate)
 
 
 def example_linear() -> None:
@@ -103,7 +115,15 @@ def example_linear() -> None:
     plot.toolbar.logo = None
     plot.line(
         input,
+        input,
+        color="#60e1e0",
+        legend_label="original",
+        line_width=2,
+    )
+    plot.line(
+        input,
         output,
+        legend_label="compressed",
         color="#fdc182",
         line_width=2,
     )
@@ -131,7 +151,7 @@ def parameters(key_prefix: str) -> Tuple[float, float, float, float]:
         "Ratio",
         key=f"{key_prefix}_ratio",
         min_value=1.0,
-        max_value=10.0,
+        max_value=100.0,
         value=4.0,
     )
     threshold = parameters[3].number_input(
@@ -178,7 +198,7 @@ class Page:
         streamlit.code(inspect.getsource(compress))
 
         example_linear()
-        example_bell()
+        example_guitar()
 
 
 if __name__ == "__main__":

@@ -15,5 +15,6 @@ flyctl ips allocate-v4 --app auralmatics
 flyctl certs add --app auralmatics auralmatics.scruffaluff.com
 ```
 
-After creating the certifcates, follow all CNAME instructions at
+After creating the certifcates, follow the `Direct visitors to application` and
+`Domain ownership verification` CNAME instructions at
 https://fly.io/apps/auralmatics/certificates.
