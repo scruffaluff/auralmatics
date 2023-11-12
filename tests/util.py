@@ -2,6 +2,7 @@
 
 
 import logging
+from pathlib import Path
 import socket
 from typing import cast
 
@@ -26,6 +27,11 @@ def fill_input(element: Locator, selector: str, input: str) -> None:
     field = selection.locator("input")
     field.fill(input)
     field.press("Enter")
+
+
+def repo_path() -> Path:
+    """Get repository path."""
+    return Path(__file__).parents[1]
 
 
 def wait_for_run(page: Page) -> None:

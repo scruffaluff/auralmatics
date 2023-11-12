@@ -16,7 +16,7 @@ from auralmatics import util
 def compress(
     signal: NDArray,
     knee_width: float = 0.0,
-    make_gain: float = 0.2,
+    make_gain: float = 0.0,
     ratio: float = 4.0,
     threshold: float = 0.8,
 ) -> NDArray:
@@ -128,6 +128,11 @@ def example_linear() -> None:
         line_width=2,
     )
     util.plot_chart(plot)
+
+
+def loudness(signal: NDArray) -> NDArray:
+    """Based on https://en.wikipedia.org/wiki/Decibel#Acoustics."""
+    return cast(NDArray, 20 * numpy.log10(signal))
 
 
 def parameters(key_prefix: str) -> Tuple[float, float, float, float]:
